@@ -4,7 +4,7 @@ import path from "path"; // Ensure the path module is imported
 const app = express();
 import bodyParser from "body-parser";
 import cors from "cors";
-import axios from 'axios'; 
+import axios from "axios";
 
 // Enable CORS
 app.use(cors({
@@ -21,25 +21,34 @@ app.use(express.static(path.join(__dirname, "build")));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Proxy route to the backend
-app.post('/customer/customerDetails', async (req, res) => {
+// Proxy route to the backend for customer
+app.post("/customer/customerDetails", async (req, res) => {
     try {
-      const data = req.body;
-      // const response = await axios.post('https://backend.hyderabad-packers-movers.in/customer/customerDetails', data);
-      const response = await axios.post('http://43.205.99.219:8080/customer/customerDetails', data);
-      // Send the JSON response from Spring Boot to the frontend
-      res.status(200).json(response.data);
+        const data = req.body;
+        const response = await axios.post("http://43.205.99.219:8080/customer/customerDetails", data);
+        res.status(200).json(response.data);
     } catch (error) {
-      console.error("Error communicating with Spring Boot:", error.message);
-      res.status(500).json({ error: 'Internal Server Error' });
+        console.error("Error communicating with Spring Boot (customer):", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
     }
-  });
-
-  // Catch-all route to serve the React app for non-API requests
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
+// Proxy route to the backend for driver
+app.post("/driver/driverDetails", async (req, res) => {
+    try {
+        const data = req.body;
+        const response = await axios.post("http://43.205.99.219:8080/driver/driverDetails", data);
+        res.status(200).json(response.data);
+    } catch (error) {
+        console.error("Error communicating with Spring Boot (driver):", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+// Catch-all route to serve the React app for non-API requests
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "build", "index.html"));
+});
 
 // Start the BFF server
 const PORT = 5000;
